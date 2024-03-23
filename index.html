@@ -1,55 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sheet Data Display</title>
     <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    
-    th, td {
-      border: 1px solid black;
-      text-align: left;
-      padding: 8px;
-    }
-    
-    th {
-      background-color: #f2f2f2;
-    }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
-
 </head>
 <body>
-    <div id="data-display"></div>
+    <div id="data-display">Loading data...</div>
 
     <script>
-      function fetchData() {
-        const apiKey = 'AIzaSyC1R_dAxJnz6eP_T4enRP1D-igTgVy4ijk';
-        const spreadsheetId = '14Ikwomm7UuaZ6gZdYHR0d1nO4RykttXfb0AraBLdoyE';
-        const range = 'Search Results!A1:R2'; // Adjusted range to include headings and the first row of results
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+        function fetchData() {
+            const apiKey = 'AIzaSyC1R_dAxJnz6eP_T4enRP1D-igTgVy4ijk'; // Make sure to use your own API key
+            const spreadsheetId = '14Ikwomm7UuaZ6gZdYHR0d1nO4RykttXfb0AraBLdoyE'; // Make sure to use your own Spreadsheet ID
+            const range = 'Search Results!A1:R2'; // Adjust the range as needed
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const rows = data.values;
-        const display = document.getElementById('data-display');
-        display.innerHTML = '<table>'; // Initialize table HTML
-        rows.forEach((row, index) => {
-          if (index === 0) { // If first row, use <th> for table headings
-            display.innerHTML += '<tr>' + row.map(columnName => `<th>${columnName}</th>`).join('') + '</tr>';
-          } else { // Use <td> for data rows
-            display.innerHTML += '<tr>' + row.map(cellValue => `<td>${cellValue}</td>`).join('') + '</tr>';
-          }
-        });
-        display.innerHTML += '</table>'; // Close table HTML
-      })
-      .catch(error => console.error('Error fetching data:', error));
-      }
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const rows = data.values;
+                    const display = document.getElementById('data-display');
+                    if (rows && rows.length > 0) {
+                        const table = document.createElement('table');
+                        rows.forEach((row, index) => {
+                            const tr = document.createElement('tr');
+                            row.forEach(cell => {
+                                const cellElement = document.createElement(index === 0 ? 'th' : 'td');
+                                cellElement.textContent = cell;
+                                tr.appendChild(cellElement);
+                            });
+                            table.appendChild(tr);
+                        });
+                        display.innerHTML = ''; // Clear the loading message or any previous content
+                        display.appendChild(table);
+                    } else {
+                        display.innerHTML = 'No data found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('data-display').innerHTML = 'Failed to load data.';
+                });
+        }
 
-      // Load data when the page loads
-      window.onload = fetchData;
+        // Load data when the page loads
+        window.onload = fetchData;
     </script>
 </body>
 </html>

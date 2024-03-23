@@ -10,7 +10,7 @@
       function fetchData() {
         const apiKey = 'AIzaSyC1R_dAxJnz6eP_T4enRP1D-igTgVy4ijk';
         const spreadsheetId = '14Ikwomm7UuaZ6gZdYHR0d1nO4RykttXfb0AraBLdoyE';
-        const range = 'Sheet2!A1:R2'; // Adjusted range to include headings and the first row of results
+        const range = 'Search Results!A1:R2'; // Adjusted range to include headings and the first row of results
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
 
     fetch(url)

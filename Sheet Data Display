@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sheet Data Display</title>
+</head>
+<body>
+    <div id="data-display"></div>
+
+    <script>
+      function fetchData() {
+        const apiKey = 'AIzaSyC1R_dAxJnz6eP_T4enRP1D-igTgVy4ijk';
+        const spreadsheetId = '14Ikwomm7UuaZ6gZdYHR0d1nO4RykttXfb0AraBLdoyE';
+        const range = 'Sheet2!A1:R2'; // Adjusted range to include headings and the first row of results
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const rows = data.values;
+        const display = document.getElementById('data-display');
+        display.innerHTML = '<table>'; // Initialize table HTML
+        rows.forEach((row, index) => {
+          if (index === 0) { // If first row, use <th> for table headings
+            display.innerHTML += '<tr>' + row.map(columnName => `<th>${columnName}</th>`).join('') + '</tr>';
+          } else { // Use <td> for data rows
+            display.innerHTML += '<tr>' + row.map(cellValue => `<td>${cellValue}</td>`).join('') + '</tr>';
+          }
+        });
+        display.innerHTML += '</table>'; // Close table HTML
+      })
+      .catch(error => console.error('Error fetching data:', error));
+      }
+
+      // Load data when the page loads
+      window.onload = fetchData;
+    </script>
+</body>
+</html>
